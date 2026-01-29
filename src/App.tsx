@@ -31,12 +31,14 @@ import {
 import logoImage from './WhatsApp_Image_2025-08-15_at_13.59.22__1_-removebg-preview.png';
 import PoliticaPrivacidad from './PoliticaPrivacidad';
 import TerminosCondiciones from './TerminosCondiciones';
+import UneteModal from './UneteModal';
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [openFaq, setOpenFaq] = React.useState<number | null>(null);
   const [showPrivacidad, setShowPrivacidad] = React.useState(false);
   const [showTerminos, setShowTerminos] = React.useState(false);
+  const [showUneteModal, setShowUneteModal] = React.useState(false);
 
   const features = [
     {
@@ -265,6 +267,7 @@ function App() {
                   FAQ
                 </a>
                 <button
+                  onClick={() => setShowUneteModal(true)}
                   className="px-8 py-3.5 rounded-full text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md"
                   style={{ backgroundColor: '#8CA48F' }}
                 >
@@ -294,6 +297,7 @@ function App() {
               <a href="#pricing" className="block text-base font-medium hover:text-emerald-600 transition-colors py-2">Precios</a>
               <a href="#faq" className="block text-base font-medium hover:text-emerald-600 transition-colors py-2">FAQ</a>
               <button
+                onClick={() => setShowUneteModal(true)}
                 className="w-full px-6 py-3.5 rounded-full text-white font-semibold hover:shadow-lg transition-all duration-200 shadow-md mt-4"
                 style={{ backgroundColor: '#8CA48F' }}
               >
@@ -322,6 +326,7 @@ function App() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
             <button
+              onClick={() => setShowUneteModal(true)}
               className="px-10 py-5 rounded-full text-white font-semibold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg"
               style={{ backgroundColor: '#8CA48F' }}
             >
@@ -329,6 +334,7 @@ function App() {
               <ArrowRight size={20} />
             </button>
             <button
+              onClick={() => setShowUneteModal(true)}
               className="px-10 py-5 rounded-full font-semibold text-lg border-2 hover:bg-stone-50 transition-all duration-300 flex items-center justify-center gap-3 group"
               style={{ borderColor: '#A2B2C2', color: '#2D3A4A' }}
             >
@@ -771,6 +777,7 @@ function App() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <button
+              onClick={() => setShowUneteModal(true)}
               className="px-12 py-5 rounded-full text-white font-semibold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-lg"
               style={{ backgroundColor: '#8CA48F' }}
             >
@@ -839,6 +846,7 @@ function App() {
       {/* Modales legales */}
       <PoliticaPrivacidad isOpen={showPrivacidad} onClose={() => setShowPrivacidad(false)} />
       <TerminosCondiciones isOpen={showTerminos} onClose={() => setShowTerminos(false)} />
+      <UneteModal isOpen={showUneteModal} onClose={() => setShowUneteModal(false)} />
     </div>
   );
 }
