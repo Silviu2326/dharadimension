@@ -5,7 +5,7 @@ interface TerminosCondicionesProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
+//
 function TerminosCondiciones({ isOpen, onClose }: TerminosCondicionesProps) {
   if (!isOpen) return null;
 
