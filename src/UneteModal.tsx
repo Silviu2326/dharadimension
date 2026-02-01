@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Check, ArrowRight, User, Briefcase } from 'lucide-react';
+import { X, Check, ArrowRight, User, Briefcase } from 'lucide-react';
 import { supabase } from './supabaseClient';
+import logoImage from './WhatsApp_Image_2025-08-15_at_13.59.22__1_-removebg-preview.png';
 
 interface UneteModalProps {
     isOpen: boolean;
@@ -9,9 +10,20 @@ interface UneteModalProps {
 
 type UserType = 'professional' | 'client' | null;
 
+const problems = [
+    "Gestionar mi agenda y citas",
+    "Conseguir nuevos clientes",
+    "Organizar mis documentos y notas",
+    "Separar vida personal del trabajo",
+    "Profesionalizar mi negocio",
+    "Otro"
+];
+
 const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [userType, setUserType] = useState<UserType>(null);
+    const [mainProblem, setMainProblem] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [honeyPot, setHoneyPot] = useState(''); // Security: Honeypot for bots
 
@@ -26,56 +38,75 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
         e.preventDefault();
 
         // 1. Security: Honeypot check
-        // If the hidden field has a value, it's likely a bot.
         if (honeyPot) {
             console.log('Bot detected');
             onClose();
             return;
         }
 
+        // Validación de campos requeridos
+        if (userType === 'professional' && !name.trim()) {
+            alert('Por favor, introduce tu nombre.');
+            return;
+        }
+
         if (!email || !userType) return;
 
-        // 2. Security: Strict Email Validation
         if (!validateEmail(email)) {
             alert('Por favor, introduce un correo electrónico válido.');
             return;
         }
 
-        // 3. Security: Rate Limiting (Client-side)
-        // Prevent submitting more than once every 10 minutes from the same browser
-        const lastSubmission = localStorage.getItem('dhara_last_submission');
-        if (lastSubmission) {
-            const timeSinceLast = Date.now() - parseInt(lastSubmission);
-            if (timeSinceLast < 10 * 60 * 1000) { // 10 minutes
-                alert('Ya has enviado una solicitud recientemente. Por favor espera unos minutos.');
-                return;
-            }
-        }
-
         try {
+            const leadData = {
+                email,
+                user_type: userType,
+                created_at: new Date().toISOString(),
+                name: name.trim() || null,
+                main_problem: mainProblem || null
+            };
+
+            // Guardar en Supabase
             const { error } = await supabase
                 .from('leads')
-                .insert([
-                    { email, user_type: userType, created_at: new Date().toISOString() },
-                ]);
+                .insert([leadData]);
 
             if (error) {
                 console.error('Error inserting lead:', error);
+                // Si falla Supabase, enviar al backend directamente
+                try {
+                    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/leads`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(leadData)
+                    });
+                } catch (backendError) {
+                    console.log('Backend no disponible');
+                }
                 alert('Hubo un error al guardar tu información. Por favor inténtalo de nuevo.');
                 return;
             }
 
-            // Save submission time for rate limiting
-            localStorage.setItem('dhara_last_submission', Date.now().toString());
+            // Enviar al backend para enviar email
+            try {
+                await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/leads`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(leadData)
+                });
+            } catch (backendError) {
+                console.log('Backend no disponible, email se enviará por trigger de Supabase');
+            }
 
-            console.log('Submitted:', { email, userType });
+            console.log('Submitted:', { email, userType, name, mainProblem });
             setIsSubmitted(true);
 
-            // Close after a brief success message
             setTimeout(() => {
                 onClose();
                 setIsSubmitted(false);
+                setName('');
                 setEmail('');
+                setMainProblem('');
                 setUserType(null);
             }, 2000);
         } catch (err) {
@@ -92,7 +123,6 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                 <div className={`absolute top-0 left-0 right-0 h-24 md:h-32 bg-gradient-to-br transition-colors duration-500 ${userType === 'client' ? 'from-[#A2B2C2] to-[#8a9aa8]' : 'from-[#8CA48F] to-[#6b856e]'
                     }`}>
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent"></div>
-                    {/* Abstract shapes */}
                     <div className="absolute -top-6 -right-6 w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-full blur-xl"></div>
                     <div className="absolute top-8 left-12 w-12 h-12 md:w-16 md:h-16 bg-white/10 rounded-full blur-lg"></div>
                 </div>
@@ -106,9 +136,9 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                 </button>
 
                 <div className="relative px-5 pt-6 pb-8 md:px-8 md:pt-8 md:pb-10">
-                    {/* Icon Badge */}
-                    <div className="mx-auto w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 transform -translate-y-2 md:-translate-y-4">
-                        <Sparkles size={28} className={`md:w-8 md:h-8 ${userType === 'client' ? 'text-[#A2B2C2]' : 'text-[#8CA48F]'}`} />
+                    {/* Logo Badge */}
+                    <div className="mx-auto w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 transform -translate-y-2 md:-translate-y-4">
+                        <img src={logoImage} alt="Dhara" className="w-16 h-16 md:w-20 md:h-20 object-contain" />
                     </div>
 
                     {!isSubmitted ? (
@@ -146,7 +176,6 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                             : 'border-stone-100 bg-stone-50 hover:border-stone-200 hover:bg-stone-100'
                                             }`}
                                     >
-                                        {/* Changed Icon */}
                                         <Briefcase size={24} className={userType === 'professional' ? 'text-[#8CA48F]' : 'text-stone-400'} />
                                         <span className={`text-xs md:text-sm font-semibold ${userType === 'professional' ? 'text-[#8CA48F]' : 'text-stone-500'}`}>Soy Profesional</span>
                                     </button>
@@ -164,6 +193,25 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                 </div>
 
                                 <div className={`transition-all duration-300 ${userType ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-2 pointer-events-none'}`}>
+                                    {/* Campo de nombre solo para profesionales */}
+                                    {userType === 'professional' && (
+                                        <div className="group relative mb-5 md:mb-6">
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <svg className="h-5 w-5 text-stone-400 transition-colors group-focus-within:text-[#8CA48F]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                required
+                                                placeholder="Tu nombre completo"
+                                                className="w-full pl-11 pr-4 py-3.5 md:py-4 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#8CA48F]/50 focus:border-[#8CA48F] outline-none transition-all placeholder:text-stone-400 text-stone-800 text-sm md:text-base"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="group relative mb-5 md:mb-6">
                                         {/* Security: Honeypot Hidden Field */}
                                         <input
@@ -187,7 +235,7 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                             type="email"
                                             required
                                             disabled={!userType}
-                                            placeholder={!userType ? "Selecciona una opción arriba" : "nombre@ejemplo.com"}
+                                            placeholder={!userType ? "Selecciona una opción arriba" : userType === 'client' ? "nombre@ejemplo.com" : "correo@profesional.com"}
                                             className={`w-full pl-11 pr-4 py-3.5 md:py-4 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 outline-none transition-all placeholder:text-stone-400 text-stone-800 text-sm md:text-base ${userType === 'client'
                                                 ? 'focus:ring-[#A2B2C2]/50 focus:border-[#A2B2C2]'
                                                 : 'focus:ring-[#8CA48F]/50 focus:border-[#8CA48F]'
@@ -195,6 +243,23 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                         />
+                                    </div>
+
+                                    {/* Campo: ¿Qué problema principal deseas que te solucione Dhara? */}
+                                    <div className="mb-5 md:mb-6">
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            ¿Qué problema principal deseas que te solucione Dhara?
+                                        </label>
+                                        <select
+                                            value={mainProblem}
+                                            onChange={(e) => setMainProblem(e.target.value)}
+                                            className="w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#8CA48F]/50 focus:border-[#8CA48F] outline-none transition-all text-stone-800 text-sm md:text-base"
+                                        >
+                                            <option value="">Selecciona una opción</option>
+                                            {problems.map((problem, index) => (
+                                                <option key={index} value={problem}>{problem}</option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                     <div className="bg-gradient-to-r from-stone-50 to-white p-4 md:p-5 rounded-2xl border border-stone-100 shadow-sm text-left mb-5 md:mb-6">
@@ -224,8 +289,8 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
 
                                     <button
                                         type="submit"
-                                        disabled={!userType || !email}
-                                        className={`w-full py-3.5 md:py-4 text-white font-bold text-base md:text-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group ${!userType || !email
+                                        disabled={!userType || !email || (userType === 'professional' && !name.trim())}
+                                        className={`w-full py-3.5 md:py-4 text-white font-bold text-base md:text-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group ${!userType || !email || (userType === 'professional' && !name.trim())
                                             ? 'bg-stone-300 cursor-not-allowed'
                                             : userType === 'client'
                                                 ? 'bg-gradient-to-r from-[#A2B2C2] to-[#8a9aa8]'

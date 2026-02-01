@@ -123,14 +123,6 @@ function App() {
     }
   ];
 
-  const stats = [
-    { number: "500+", label: "profesionales Activos" },
-    { number: "10,000+", label: "Citas Gestionadas" },
-    { number: "98%", label: "Satisfacción Cliente" },
-    { number: "24/7", label: "Soporte Disponible" }
-  ];
-
-
   const pricingPlans = [
     {
       name: "Básico",
@@ -350,33 +342,9 @@ function App() {
               <span>100% Seguro</span>
             </div>
             <div className="flex items-center gap-2">
-              <Users size={16} style={{ color: '#8CA48F' }} />
-              <span>500+ profesionales</span>
-            </div>
-            <div className="flex items-center gap-2">
               <Star size={16} style={{ color: '#8CA48F' }} />
-              <span>98% Satisfacción</span>
+              <span>Sin comisiones</span>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 px-6 lg:px-8 bg-white">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center group">
-                <div className="relative">
-                  <div className="text-4xl md:text-5xl font-bold mb-3 group-hover:scale-110 transition-transform duration-300" style={{ color: '#8CA48F' }}>
-                    {stat.number}
-                  </div>
-                  <div className="text-sm md:text-base text-stone-600 font-medium">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -407,8 +375,6 @@ function App() {
           </div>
         </div>
       </section>
-
-
 
       {/* Features Section */}
       <section id="features" className="py-32 px-6 lg:px-8 bg-gradient-to-br from-[#F3EEE9] to-white">
@@ -537,7 +503,7 @@ function App() {
               <ul className="space-y-4">
                 {[
                   "Quieres ordenar tu negocio de una vez por todas.",
-                  "Buscas una herramienta pensada solo para profesionales, no genérica.",
+                  "Buscas una herramienta pensaba solo para profesionales, no genérica.",
                   "Necesitas visibilidad real sin depender de redes sociales.",
                   "Quieres cobrar y trabajar con una imagen más profesional.",
                   "Te importa tu tiempo, tu energía y el valor de tu consulta."
