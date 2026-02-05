@@ -275,8 +275,7 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                                 "Gestiona tu bienestar"
                                             ] : [
                                                 "Acceso anticipado a la plataforma",
-                                                "Beneficios exclusivos de por vida",
-                                                "Voz y voto en el ecosistema Dhara"
+                                                "Beneficios exclusivos de por vida"
                                             ]).map((item, i) => (
                                                 <li key={i} className="flex items-start text-xs md:text-sm text-stone-600">
                                                     <div className={`flex-shrink-0 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center mr-3 mt-0.5 ${userType === 'client' ? 'bg-blue-50 text-blue-600' : 'bg-[#dcfce7] text-[#166534]'
