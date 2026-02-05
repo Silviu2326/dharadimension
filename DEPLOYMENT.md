@@ -62,19 +62,15 @@ Agrega estas variables en el dashboard de Vercel (Settings → Environment Varia
 ```env
 VITE_SUPABASE_URL=https://jeqqvtliltdtbxsgdedo.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_14x8zb3-GZivvOq7OWr0zA_3jLorkrk
-VITE_API_URL=https://tu-backend-url.com
+VITE_API_URL=https://backenddhara-production.up.railway.app
 ```
-
-**IMPORTANTE:** Reemplaza `https://tu-backend-url.com` con la URL real de tu backend.
 
 ### 4. Configurar el Backend
 
 Tu backend debe estar desplegado en un servidor separado (Railway, Render, Heroku, etc.).
 
-**Backend URL Examples:**
-- Railway: `https://dhara-backend.up.railway.app`
-- Render: `https://dhara-backend.onrender.com`
-- Heroku: `https://dhara-backend.herokuapp.com`
+**Tu Backend en Railway:**
+- URL: `https://backenddhara-production.up.railway.app`
 
 ### 5. Configurar CORS en el Backend
 

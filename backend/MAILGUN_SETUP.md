@@ -54,6 +54,7 @@ MAILGUN_API_KEY=key-tu-api-key-aqui
 MAILGUN_DOMAIN=sandbox123abc.mailgun.org
 MAILGUN_REGION=us
 ADMIN_EMAIL=info@dharadimensionhumana.es
+FRONTEND_URL=http://localhost:5173
 ```
 
 ```env
@@ -62,6 +63,7 @@ MAILGUN_API_KEY=key-tu-api-key-aqui
 MAILGUN_DOMAIN=appdhara.com
 MAILGUN_REGION=us
 ADMIN_EMAIL=info@dharadimensionhumana.es
+FRONTEND_URL=https://dharadimension.vercel.app
 ```
 
 ### 5. Pasos para Verificar

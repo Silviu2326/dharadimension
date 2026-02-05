@@ -7,11 +7,13 @@ class EmailService {
         this.client = null;
         this.domain = null;
         this.isConfigured = false;
+        this.frontendUrl = null;
     }
 
     initialize() {
         const apiKey = process.env.MAILGUN_API_KEY;
         this.domain = process.env.MAILGUN_DOMAIN;
+        this.frontendUrl = process.env.FRONTEND_URL || 'https://dharadimension.vercel.app';
         const region = process.env.MAILGUN_REGION || 'us'; // 'us' o 'eu'
 
         if (apiKey && this.domain) {
@@ -102,8 +104,8 @@ class EmailService {
                 <li><strong>Derechos:</strong> Tienes derecho a acceder, rectificar y suprimir tus datos, así como otros derechos detallados en nuestra Política de Privacidad, enviando un correo a info@dharadimensionhumana.es.</li>
             </ul>
             <div class="unsubscribe">
-                <p>Si no deseas recibir más comunicaciones, puedes darte de baja haciendo clic en este enlace: <a href="https://dharadimensionhumana.es/unsubscribe?email=${encodeURIComponent(email)}">Enlace de desuscripción</a>.</p>
-                <p>"En Dhara respetamos tu espacio. Si sientes que este ya no es tu lugar, puedes <a href="https://dharadimensionhumana.es/unsubscribe?email=${encodeURIComponent(email)}">darte de baja aquí</a> o responder a este correo con la palabra 'Baja'."</p>
+                <p>Si no deseas recibir más comunicaciones, puedes darte de baja haciendo clic en este enlace: <a href="${this.frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}">Enlace de desuscripción</a>.</p>
+                <p>"En Dhara respetamos tu espacio. Si sientes que este ya no es tu lugar, puedes <a href="${this.frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}">darte de baja aquí</a> o responder a este correo con la palabra 'Baja'."</p>
             </div>
         </div>
     </div>
@@ -164,8 +166,8 @@ class EmailService {
                 <li><strong>Derechos:</strong> Tienes derecho a acceder, rectificar y suprimir tus datos, así como otros derechos detallados en nuestra Política de Privacidad, enviando un correo a info@dharadimensionhumana.es.</li>
             </ul>
             <div class="unsubscribe">
-                <p>Si no deseas recibir más comunicaciones, puedes darte de baja haciendo clic en este enlace: <a href="https://dharadimensionhumana.es/unsubscribe?email=${encodeURIComponent(email)}">Enlace de desuscripción</a>.</p>
-                <p>"En Dhara respetamos tu espacio. Si sientes que este ya no es tu lugar, puedes <a href="https://dharadimensionhumana.es/unsubscribe?email=${encodeURIComponent(email)}">darte de baja aquí</a> o responder a este correo con la palabra 'Baja'."</p>
+                <p>Si no deseas recibir más comunicaciones, puedes darte de baja haciendo clic en este enlace: <a href="${this.frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}">Enlace de desuscripción</a>.</p>
+                <p>"En Dhara respetamos tu espacio. Si sientes que este ya no es tu lugar, puedes <a href="${this.frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}">darte de baja aquí</a> o responder a este correo con la palabra 'Baja'."</p>
             </div>
         </div>
     </div>

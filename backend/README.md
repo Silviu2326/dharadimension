@@ -1,109 +1,196 @@
-# Configuración de Mailgun para Dhara Dimension
+# Dhara Backend API
 
-## Cómo obtener las credenciales de Mailgun
+Backend del proyecto Dhara - Plataforma de gestión para profesionales de terapias naturales.
 
-### 1. Crear cuenta en Mailgun
+## Tecnologías
 
-1. Ve a https://mailgun.com y crea una cuenta gratuita
-2. Mailgun ofrece 5,000 emails gratuitos al mes
+- Node.js + Express
+- Supabase (Base de datos)
+- Mailgun (Envío de emails)
+- CORS, Helmet, Morgan
 
-### 2. Obtener tu API Key
-
-1. Inicia sesión en tu cuenta de Mailgun
-2. Ve a **Settings** > **API Keys**
-3. Copia tu **Private API Key** (comienza con `key-`)
-4. Esta es tu `MAILGUN_API_KEY`
-
-### 3. Configurar tu dominio
-
-**Opción A: Usar tu propio dominio**
-1. Ve a **Sending** > **Domains**
-2. Agrega tu dominio (ej: `mail.tudominio.com`)
-3. Sigue las instrucciones DNS para verificar el dominio
-4. Tu `MAILGUN_DOMAIN` será: `mail.tudominio.com`
-
-**Opción B: Usar dominio gratuito de Mailgun**
-1. Mailgun te asigna un dominio como `mg.tudominio.com`
-2. También puedes usar el sandbox: `sandbox123.mailgun.org`
-3. El dominio aparece en **Sending** > **Domains**
-4. NOTA: El sandbox solo funciona con emails autorizados
-
-### 4. Configurar el archivo .env
-
-```bash
-# Copia el archivo de ejemplo
-cp .env.example .env
-
-# Edita el archivo .env con tus credenciales
-```
-
-Ejemplo de `.env`:
-```env
-# Servidor
-PORT=3000
-NODE_ENV=development
-
-# Mailgun Configuration
-MAILGUN_API_KEY=key-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-MAILGUN_DOMAIN=mg.tudominio.com
-ADMIN_EMAIL=admin@tudominio.com
-
-# Supabase Configuration
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_ANON_KEY=tu-anon-key
-```
-
-### 5. Probar el envío
+## Instalación
 
 ```bash
 # Instalar dependencias
 npm install
 
-# Iniciar servidor
+# Copiar archivo de ejemplo de variables de entorno
+cp .env.example .env
+
+# Configurar variables de entorno en .env
+# (Ver sección de Configuración)
+
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+## Configuración
+
+Edita el archivo `.env` con tus credenciales:
+
+```env
+# Servidor
+PORT=3000
+NODE_ENV=development
+
+# Frontend URL
+FRONTEND_URL=https://tu-frontend.vercel.app
+
+# Mailgun (para envío de emails)
+MAILGUN_API_KEY=tu-api-key
+MAILGUN_DOMAIN=tu-dominio.com
+MAILGUN_REGION=us
+ADMIN_EMAIL=tu-email@ejemplo.com
+
+# Supabase (base de datos)
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_ANON_KEY=tu-anon-key
+```
+
+### Obtener credenciales de Mailgun
+
+1. Ve a [app.mailgun.com](https://app.mailgun.com)
+2. Crea una cuenta o inicia sesión
+3. Settings → API Keys → Copia tu Private API Key
+4. Sending → Domains → Usa el sandbox o configura tu dominio
+
+Ver `MAILGUN_SETUP.md` para más detalles.
+
+### Obtener credenciales de Supabase
+
+1. Ve a [supabase.com](https://supabase.com)
+2. Crea un proyecto
+3. Settings → API → Copia la URL y anon/public key
+
+## Scripts
+
+```bash
+# Desarrollo (con nodemon)
+npm run dev
+
+# Producción
 npm start
 ```
 
-El servidor mostrará:
+## Endpoints
+
+### Health Check
 ```
-✅ Servicio de email inicializado
-🚀 Servidor ejecutándose en http://localhost:3000
+GET /api/health
 ```
 
-### 6. Verificar funcionamiento
+### Leads (Registro de usuarios)
+```
+POST /api/leads
+Body: {
+  name: string,
+  email: string,
+  user_type: 'professional' | 'client',
+  main_problem?: string
+}
+```
 
-Puedes probar el endpoint con curl:
+### Contacto
+```
+POST /api/contacto
+Body: {
+  name: string,
+  email: string,
+  message: string
+}
+```
+
+### Desuscripción
+```
+GET /unsubscribe?email=usuario@email.com
+POST /api/unsubscribe
+Body: {
+  email: string,
+  reason?: string
+}
+```
+
+## Estructura
+
+```
+backend/
+├── routes/           # Rutas de la API
+│   ├── health.js
+│   ├── leads.js
+│   ├── contacto.js
+│   └── unsubscribe.js
+├── services/         # Servicios (emails, etc)
+│   └── emailService.js
+├── server.js         # Punto de entrada
+├── .env              # Variables de entorno (no incluido en git)
+├── .env.example      # Ejemplo de variables de entorno
+└── package.json
+```
+
+## Despliegue
+
+### Railway
+
 ```bash
-curl -X POST http://localhost:3000/api/leads \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Juan Pérez","email":"juan@ejemplo.com","user_type":"professional"}'
+# Instalar Railway CLI
+npm i -g @railway/cli
+
+# Login
+railway login
+
+# Inicializar proyecto
+railway init
+
+# Agregar variables de entorno
+railway variables set MAILGUN_API_KEY=xxx
+railway variables set SUPABASE_URL=xxx
+# ... etc
+
+# Desplegar
+railway up
 ```
 
-### Solución de problemas
+### Render
 
-**"Mailgun no configurado"**
-- Verifica que las variables de entorno estén correctamente seteadas
-- Reinicia el servidor después de cambiar el .env
+1. Conecta tu repositorio en [render.com](https://render.com)
+2. Crea un nuevo "Web Service"
+3. Build Command: `npm install`
+4. Start Command: `npm start`
+5. Agrega las variables de entorno en el dashboard
 
-**Error de autenticación**
-- Verifica que tu API key sea correcta (sin espacios)
-- Asegúrate de usar la Private API Key, no la pública
+### Heroku
 
-**Email no llega**
-- Si usas sandbox, autoriza el email destinatario en Mailgun
-- Verifica la carpeta de spam
-- Revisa los logs de Mailgun en su dashboard
+```bash
+# Login
+heroku login
 
-### Límites de la cuenta gratuita
+# Crear app
+heroku create dhara-backend
 
-- 5,000 emails/mes
-- 300 emails/día
-- 100 emails/hora
+# Agregar variables de entorno
+heroku config:set MAILGUN_API_KEY=xxx
+heroku config:set SUPABASE_URL=xxx
+# ... etc
 
-### Alternativas a Mailgun
+# Desplegar
+git push heroku main
+```
 
-Si prefieres otro servicio:
-- **SendGrid** - https://sendgrid.com
-- **Resend** - https://resend.com
-- **AWS SES** - https://aws.amazon.com/ses
+## CORS
 
-El código está preparado para ser adaptable a cualquier servicio de email.
+El backend acepta peticiones desde:
+- `http://localhost:5173` (desarrollo)
+- Cualquier origen (configurar en producción)
+
+Para producción, actualiza `server.js`:
+
+```javascript
+app.use(cors({
+  origin: ['https://tu-dominio.com', 'https://tu-proyecto.vercel.app']
+}));
+```
+
+## Licencia
+
+Privado - Dhara Dimension
