@@ -28,9 +28,9 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Validación de nombre para profesionales
-        if (user_type === 'professional' && (!name || !name.trim())) {
-            return res.status(400).json({ error: 'El nombre es requerido para profesionales' });
+        // Validación de nombre (requerido para todos)
+        if (!name || !name.trim()) {
+            return res.status(400).json({ error: 'El nombre es requerido' });
         }
 
         // Validación de email
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
                 .insert([{
                     email,
                     user_type,
-                    name: user_type === 'professional' ? name.trim() : null,
+                    name: name.trim(),
                     created_at: new Date().toISOString()
                 }]);
 
@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
         );
 
         // Notificar al admin
-        if (user_type === 'professional' && name) {
+        if (name) {
             await emailService.sendNotificationToAdmin(name, email, user_type);
         }
 
@@ -74,7 +74,7 @@ router.post('/', async (req, res) => {
             datos: {
                 email,
                 user_type,
-                name: user_type === 'professional' ? name : undefined,
+                name: name,
                 fecha: new Date().toISOString()
             },
             email: emailResult

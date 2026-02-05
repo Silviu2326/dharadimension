@@ -45,7 +45,7 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
         }
 
         // Validación de campos requeridos
-        if (userType === 'professional' && !name.trim()) {
+        if (!name.trim()) {
             alert('Por favor, introduce tu nombre.');
             return;
         }
@@ -193,11 +193,11 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                 </div>
 
                                 <div className={`transition-all duration-300 ${userType ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-2 pointer-events-none'}`}>
-                                    {/* Campo de nombre solo para profesionales */}
-                                    {userType === 'professional' && (
+                                    {/* Campo de nombre para profesionales y clientes */}
+                                    {userType && (
                                         <div className="group relative mb-5 md:mb-6">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <svg className="h-5 w-5 text-stone-400 transition-colors group-focus-within:text-[#8CA48F]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <svg className={`h-5 w-5 text-stone-400 transition-colors ${userType === 'client' ? 'group-focus-within:text-[#A2B2C2]' : 'group-focus-within:text-[#8CA48F]'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
@@ -205,7 +205,7 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                                 type="text"
                                                 required
                                                 placeholder="Tu nombre completo"
-                                                className="w-full pl-11 pr-4 py-3.5 md:py-4 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#8CA48F]/50 focus:border-[#8CA48F] outline-none transition-all placeholder:text-stone-400 text-stone-800 text-sm md:text-base"
+                                                className={`w-full pl-11 pr-4 py-3.5 md:py-4 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 outline-none transition-all placeholder:text-stone-400 text-stone-800 text-sm md:text-base ${userType === 'client' ? 'focus:ring-[#A2B2C2]/50 focus:border-[#A2B2C2]' : 'focus:ring-[#8CA48F]/50 focus:border-[#8CA48F]'}`}
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
                                             />
@@ -245,22 +245,24 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
                                         />
                                     </div>
 
-                                    {/* Campo: ¿Qué problema principal deseas que te solucione Dhara? */}
-                                    <div className="mb-5 md:mb-6">
-                                        <label className="block text-sm font-medium text-stone-700 mb-2">
-                                            ¿Qué problema principal deseas que te solucione Dhara?
-                                        </label>
-                                        <select
-                                            value={mainProblem}
-                                            onChange={(e) => setMainProblem(e.target.value)}
-                                            className="w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#8CA48F]/50 focus:border-[#8CA48F] outline-none transition-all text-stone-800 text-sm md:text-base"
-                                        >
-                                            <option value="">Selecciona una opción</option>
-                                            {problems.map((problem, index) => (
-                                                <option key={index} value={problem}>{problem}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                    {/* Campo: ¿Qué problema principal deseas que te solucione Dhara? - Solo para profesionales */}
+                                    {userType === 'professional' && (
+                                        <div className="mb-5 md:mb-6">
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                ¿Qué problema principal deseas que te solucione Dhara?
+                                            </label>
+                                            <select
+                                                value={mainProblem}
+                                                onChange={(e) => setMainProblem(e.target.value)}
+                                                className="w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-[#8CA48F]/50 focus:border-[#8CA48F] outline-none transition-all text-stone-800 text-sm md:text-base"
+                                            >
+                                                <option value="">Selecciona una opción</option>
+                                                {problems.map((problem, index) => (
+                                                    <option key={index} value={problem}>{problem}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
 
                                     <div className="bg-gradient-to-r from-stone-50 to-white p-4 md:p-5 rounded-2xl border border-stone-100 shadow-sm text-left mb-5 md:mb-6">
                                         <p className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 md:mb-3 ml-1">
@@ -289,8 +291,8 @@ const UneteModal: React.FC<UneteModalProps> = ({ isOpen, onClose }) => {
 
                                     <button
                                         type="submit"
-                                        disabled={!userType || !email || (userType === 'professional' && !name.trim())}
-                                        className={`w-full py-3.5 md:py-4 text-white font-bold text-base md:text-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group ${!userType || !email || (userType === 'professional' && !name.trim())
+                                        disabled={!userType || !email || !name.trim()}
+                                        className={`w-full py-3.5 md:py-4 text-white font-bold text-base md:text-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 group ${!userType || !email || !name.trim()
                                             ? 'bg-stone-300 cursor-not-allowed'
                                             : userType === 'client'
                                                 ? 'bg-gradient-to-r from-[#A2B2C2] to-[#8a9aa8]'

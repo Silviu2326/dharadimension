@@ -12,16 +12,28 @@ class EmailService {
     initialize() {
         const apiKey = process.env.MAILGUN_API_KEY;
         this.domain = process.env.MAILGUN_DOMAIN;
+        const region = process.env.MAILGUN_REGION || 'us'; // 'us' o 'eu'
 
         if (apiKey && this.domain) {
-            this.client = mailgun.client({
+            const clientConfig = {
                 username: 'api',
                 key: apiKey
-            });
+            };
+
+            // Si la región es EU, agregar la URL específica
+            if (region === 'eu') {
+                clientConfig.url = 'https://api.eu.mailgun.net';
+            }
+
+            this.client = mailgun.client(clientConfig);
             this.isConfigured = true;
             console.log('✅ Servicio de email inicializado');
+            console.log(`📍 Región de Mailgun: ${region.toUpperCase()}`);
+            console.log(`📧 Dominio configurado: ${this.domain}`);
         } else {
             console.log('⚠️ Mailgun no configurado. Los emails no se enviarán.');
+            if (!apiKey) console.log('   - Falta MAILGUN_API_KEY');
+            if (!this.domain) console.log('   - Falta MAILGUN_DOMAIN');
         }
     }
 
@@ -67,7 +79,7 @@ class EmailService {
             <h1>🌿 Dhara Dimension</h1>
         </div>
         <div class="content">
-            <p>Hola, profesional del bienestar:</p>
+            <p>Hola ${name}:</p>
             <p>Hoy no recibes un correo más de una plataforma tecnológica. Hoy recibes un agradecimiento sincero por formar parte del momento fundador de Dhara.</p>
             <p>Sabemos que dedicarse a las terapias naturales es, en esencia, un acto de valentía. Queremos darte las gracias por haber perseguido esa voz interior, por honrar tus dones y por poner tu sabiduría al servicio de los demás. En un mundo que a menudo olvida lo esencial, tú has decidido cuidar, sanar y acompañar. Eso no es solo un trabajo; es un acto de amor a tu propósito y al mundo.</p>
             <p>Dhara nace para cambiar las reglas del juego. Venimos a darte la voz y el lugar que el sector merece. Como persona fundadora, ya tienes asegurados tus 3 meses gratis del plan avanzado en cuanto abramos puertas.</p>
@@ -131,7 +143,7 @@ class EmailService {
         </div>
         <div class="content">
             <p>Hola, buscador/a de bienestar:</p>
-            <p>Y no es broma. A veces el ritmo del mundo nos hace olvidar que el mejor lugar donde podemos invertir tiempo es en nosotros mismos. Por eso, antes de que Dhara empieza a caminar, quería darte la enhorabuena por esto:</p>
+            <p>Y no es broma ${name}, que tu "yo" del futuro te lo va a agradecer. A veces el ritmo del mundo nos hace olvidar que el mejor lugar donde podemos invertir tiempo es en nosotros mismos. Por eso, antes de que Dhara empieze a caminar, quería darte la enhorabuena por esto:</p>
             <p>El simple hecho de estar leyendo esto significa que ya has activado algo poderoso en ti: el deseo de ocuparte de tu cuerpo, de tus emociones y de tu paz.</p>
             <p>Estamos creando una herramienta para que cuidarte sea, por fin, rápido, sencillo y muy cómodo. Queremos que la tecnología trabaje para ti, no en tu contra. Muy pronto, la app Dhara estará en tu móvil compartiendo espacio con esas apps de distracción y divertimento, pero con una misión distinta: ser ese pequeño aviso que te recuerda que lo primero es pararte, desconectar y dedicarte una sesión a ti.</p>
             <p>Dhara no será un lugar comercial más. Es un refugio diseñado para que, con un par de toques, encuentres el acompañamiento que necesitas para cambiar esta vida loca que llevamos.</p>
